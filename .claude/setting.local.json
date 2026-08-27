@@ -1,0 +1,7 @@
+{
+    "env": {
+        "ANTHROPIC_BASE_URL": "http://localhoast:20128",
+        "ANTHROPIC_AUTH_TOKEN": "<your OmniRoute API key>",
+        "CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY": "1",
+    },
+}
