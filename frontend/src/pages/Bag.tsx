@@ -1,14 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useAuth } from '../context/AuthContext';
 import { useBag } from '../context/BagContext';
 import type { LinkItem } from '../context/BagContext';
-import { QuickAddForm } from '../components/QuickAddForm';
 import { LinkCard } from '../components/LinkCard';
 import { EditLinkModal } from '../components/EditLinkModal';
 import { DeleteConfirmModal } from '../components/DeleteConfirmModal';
+import { Navbar } from '../components/Navbar';
 import {
-  LogOut,
-  Briefcase,
   Search,
   Filter,
   SlidersHorizontal,
@@ -18,7 +15,6 @@ import {
 } from 'lucide-react';
 
 export const Bag: React.FC = () => {
-  const { user, signOut } = useAuth();
   const { links, loading, error, deleteLink } = useBag();
 
   // Search & Filter state
@@ -129,31 +125,10 @@ export const Bag: React.FC = () => {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* Header */}
-      <header className="dashboard-header">
-        <div className="header-container">
-          <div className="header-logo">
-            <Briefcase size={26} className="logo-icon" style={{ color: 'var(--brass)' }} />
-            <h1>The Bag</h1>
-          </div>
-          <div className="header-actions">
-            {user && <span className="user-email">{user.email}</span>}
-            <button className="btn btn-signout" onClick={signOut} title="Sign Out">
-              <LogOut size={16} />
-              Sign Out
-            </button>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
-      {/* Main Dashboard Layout */}
-      <main className="container main-layout">
-        {/* Sidebar / Quick Add */}
-        <aside>
-          <QuickAddForm />
-        </aside>
-
-        {/* Content Area */}
+      {/* Content Area */}
+      <main className="container" style={{ padding: '20px', flex: 1 }}>
         <section style={{ display: 'flex', flexDirection: 'column' }}>
           {/* Controls Panel */}
           <div className="controls-panel">

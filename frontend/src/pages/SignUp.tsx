@@ -18,6 +18,8 @@ export const SignUp: React.FC = () => {
     setError(null);
     setInfo(null);
 
+    const trimmedEmail = email.trim();
+
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
@@ -32,7 +34,7 @@ export const SignUp: React.FC = () => {
 
     try {
       const { data, error } = await supabase.auth.signUp({
-        email,
+        email: trimmedEmail,
         password,
       });
 

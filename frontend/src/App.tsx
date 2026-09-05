@@ -5,6 +5,9 @@ import { BagProvider } from './context/BagContext';
 import { SignIn } from './pages/SignIn';
 import { SignUp } from './pages/SignUp';
 import { Bag } from './pages/Bag';
+import { AddItem } from './pages/AddItem';
+import { Navbar } from './components/Navbar';
+import { FloatingAddButton } from './components/FloatingAddButton';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
@@ -51,8 +54,20 @@ function App() {
             <Route path="/signin" element={<PublicRoute><SignIn /></PublicRoute>} />
             <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
             <Route path="/bag" element={<ProtectedRoute><Bag /></ProtectedRoute>} />
+            <Route
+              path="/add"
+              element={
+                <ProtectedRoute>
+                  <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+                    <Navbar />
+                    <AddItem />
+                  </div>
+                </ProtectedRoute>
+              }
+            />
             <Route path="*" element={<Navigate to="/bag" replace />} />
           </Routes>
+      <FloatingAddButton />
         </BagProvider>
       </AuthProvider>
     </BrowserRouter>

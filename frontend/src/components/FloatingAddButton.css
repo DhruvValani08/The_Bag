@@ -1,0 +1,60 @@
+.floating-add-button {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--olive-green);
+  color: var(--text-light);
+  border: none;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.floating-add-button:hover {
+  background: var(--olive-light);
+  width: 140px;
+  border-radius: 28px;
+}
+
+.floating-add-button .fab-label {
+  opacity: 0;
+  margin-left: 8px;
+  white-space: nowrap;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  transition: opacity 0.2s ease;
+}
+
+.floating-add-button:hover .fab-label {
+  opacity: 1;
+}
+
+/* Toast Notification */
+.toast-notification {
+  position: fixed;
+  bottom: 100px;
+  right: 24px;
+  background: var(--parchment);
+  color: var(--text-dark);
+  padding: 12px 20px;
+  border-left: 5px solid var(--olive-green);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: slideIn 0.3s ease-out;
+  z-index: 1000;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
