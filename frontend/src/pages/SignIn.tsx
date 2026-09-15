@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
-import { KeyRound, Mail, Briefcase, Eye, EyeOff } from 'lucide-react';
+import { Briefcase, Mail, KeyRound, Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export const SignIn: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -10,19 +10,15 @@ export const SignIn: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { signIn } = useAuth();
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     const trimmedEmail = email.trim();
     setLoading(true);
-
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: trimmedEmail,
-        password,
-      });
-
+      const { error } = await signIn(trimmedEmail, password);
       if (error) throw error;
       navigate('/bag');
     } catch (err: any) {
@@ -42,10 +38,8 @@ export const SignIn: React.FC = () => {
           <h1>The Bag</h1>
           <p className="subtitle">Securely pack your digital findings.</p>
         </div>
-
         <form onSubmit={handleSignIn} className="auth-form">
           {error && <div className="error-banner">{error}</div>}
-
           <div className="input-group">
             <label htmlFor="email">Email Address</label>
             <div className="input-wrapper">
@@ -61,7 +55,6 @@ export const SignIn: React.FC = () => {
               />
             </div>
           </div>
-
           <div className="input-group">
             <label htmlFor="password">Password</label>
             <div className="input-wrapper">
@@ -85,12 +78,10 @@ export const SignIn: React.FC = () => {
               </button>
             </div>
           </div>
-
           <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
             {loading ? 'Opening the Bag...' : 'Sign In'}
           </button>
         </form>
-
         <div className="auth-footer">
           <p>
             Don't have an account? <Link to="/signup">Create one here</Link>

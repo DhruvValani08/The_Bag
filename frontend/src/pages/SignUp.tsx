@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
-import { KeyRound, Mail, Briefcase, Eye, EyeOff } from 'lucide-react';
+import { Briefcase, Mail, KeyRound, Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export const SignUp: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -12,46 +12,48 @@ export const SignUp: React.FC = () => {
   const [info, setInfo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { signUp } = useAuth();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setInfo(null);
-
-    const trimmedEmail = email.trim();
-
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      setError('Passwords do not match.');
       return;
     }
-
     if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+      setError('Password must be at least 6 characters.');
       return;
     }
-
     setLoading(true);
-
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email: trimmedEmail,
-        password,
-      });
-
+      const { error, user, session } = await signUp(email.trim(), password);
       if (error) throw error;
 
-      if (data.session) {
-        // If email confirmation is disabled, user is logged in immediately
-        navigate('/bag');
-      } else {
-        // Email confirmation is enabled
-        setInfo('Sign up successful! Please check your email inbox to verify your account.');
-        setEmail('');
-        setPassword('');
-        setConfirmPassword('');
+      // If account already exists, Supabase returns user with empty identities array
+      if (user && user.identities && user.identities.length === 0) {
+        setError('An account with this email already exists. Please sign in instead.');
+        return;
       }
+
+      // If a session was created (email confirmation disabled or auto-confirmed), redirect directly to bag
+      if (session) {
+        navigate('/bag');
+        return;
+      }
+
+      // If email confirmation is required
+      setInfo('Account created! Supabase requires email confirmation before signing in. Please check your inbox or sign in once verified.');
+      setEmail('');
+      setPassword('');
+      setConfirmPassword('');
     } catch (err: any) {
-      setError(err.message || 'An error occurred during sign up.');
+      if (err.message && err.message.toLowerCase().includes('rate limit')) {
+        setError('Email rate limit reached for Supabase. If you already created your account, please sign in. (You can also disable "Confirm email" in your Supabase Auth settings to bypass verification).');
+      } else {
+        setError(err.message || 'An error occurred during sign up.');
+      }
     } finally {
       setLoading(false);
     }
@@ -67,11 +69,9 @@ export const SignUp: React.FC = () => {
           <h1>The Bag</h1>
           <p className="subtitle">Start packing your digital findings.</p>
         </div>
-
         <form onSubmit={handleSignUp} className="auth-form">
           {error && <div className="error-banner">{error}</div>}
           {info && <div className="info-banner">{info}</div>}
-
           <div className="input-group">
             <label htmlFor="email">Email Address</label>
             <div className="input-wrapper">
@@ -87,7 +87,6 @@ export const SignUp: React.FC = () => {
               />
             </div>
           </div>
-
           <div className="input-group">
             <label htmlFor="password">Password</label>
             <div className="input-wrapper">
@@ -111,7 +110,6 @@ export const SignUp: React.FC = () => {
               </button>
             </div>
           </div>
-
           <div className="input-group">
             <label htmlFor="confirmPassword">Confirm Password</label>
             <div className="input-wrapper">
@@ -127,12 +125,10 @@ export const SignUp: React.FC = () => {
               />
             </div>
           </div>
-
           <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
             {loading ? 'Creating Account...' : 'Sign Up'}
           </button>
         </form>
-
         <div className="auth-footer">
           <p>
             Already have an account? <Link to="/signin">Sign in here</Link>
